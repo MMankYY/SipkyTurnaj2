@@ -1,0 +1,82 @@
+using System;
+using System.Windows.Forms;
+
+namespace SipkyTurnaj2
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            DrawBracket();
+        }
+
+        private void DrawBracket()
+        {
+            int matchHeight = 50;
+            int matchSpacing = 30;
+            int roundSpacing = 150;
+            int startX = 1000; // Starting X position for the center
+            int startY = 50;
+
+            int playerCount = 16; // Počet hráčov
+            int winnersRounds = 4; // Počet kôl pre hlavný turnaj (Winners Bracket)
+
+            // Vygenerovanie hlavného turnaja
+            for (int round = 0; round < winnersRounds; round++)
+            {
+                int matches = (int)Math.Pow(2, winnersRounds - round - 1);
+                for (int match = 0; match < matches; match++)
+                {
+                    int yOffset = startY + (matchHeight + matchSpacing) * (2 * match + 1) * (int)Math.Pow(2, round);
+                    DrawMatch(startX + roundSpacing * round, yOffset);
+                }
+            }
+
+            // Ak je počet hráčov 16, pridaj zdvojené zápasy do vedľajšieho turnaja (Losers Bracket)
+            if (playerCount == 16)
+            {
+                int losersRounds = 4; // Počet kôl pre vedľajší turnaj (Losers Bracket)
+                for (int round = 0; round < losersRounds; round++)
+                {
+                    int matches = (int)Math.Pow(2, losersRounds - round - 1);
+                    for (int match = 0; match < matches; match++)
+                    {
+                        if (round > 0 || match >= 8) // Skip first 4 matches in the first round
+                        {
+                            int yOffset = startY + (matchHeight + matchSpacing) * (2 * match + 1) * (int)Math.Pow(2, round);
+
+                            // Draw the original match
+                            DrawMatch(startX - roundSpacing * round, yOffset);
+
+                            // Draw the additional match next to the original
+                            DrawMatch(startX - roundSpacing * round - 120, yOffset); // Adjusted X position for additional match
+                        }
+                    }
+                }
+            }
+        }
+
+        private void DrawMatch(int x, int y)
+        {
+            TextBox player1 = new TextBox
+            {
+                Location = new System.Drawing.Point(x, y),
+                Size = new System.Drawing.Size(100, 20)
+            };
+
+            TextBox player2 = new TextBox
+            {
+                Location = new System.Drawing.Point(x, y + 25),
+                Size = new System.Drawing.Size(100, 20)
+            };
+
+            this.Controls.Add(player1);
+            this.Controls.Add(player2);
+        }
+    }
+}
